@@ -218,4 +218,26 @@ trait S3ConnectionTrait {
 			return new RejectedPromise(new CredentialsException($msg));
 		};
 	}
+
+	protected function getSSECKey(): ?string {
+		if (isset($this->params['sse_c_key'])) {
+			return $this->params['sse_c_key'];
+		}
+
+		return null;
+	}
+
+	protected function getSSECParameters(): array {
+		$key = $this->getSSECKey();
+
+		if ($key === null) {
+			return [];
+		}
+
+		return [
+			'SSECustomerAlgorithm' => 'AES256',
+			'SSECustomerKey' => $key,
+			'SSECustomerKeyMD5' => md5($key, true)
+		];
+	}
 }
